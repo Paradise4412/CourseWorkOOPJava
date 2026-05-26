@@ -1,0 +1,75 @@
+@startuml ClassDiagram
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+title Диаграмма классов\nИнформационная система учёта задержаний
+
+package "" {
+  class DetentionRegistryApplication {
+    +{static} main(args: String[]): void
+  }
+}
+
+package "presentation" {
+  class ConsoleApplication {
+    -repository: DetentionRepository
+    -scanner: Scanner
+    +run(): void
+  }
+}
+
+package "persistence" {
+  class DetentionRepository {
+    +insert(entity: DetentionEntity): long
+    +findAll(): List<DetentionEntity>
+    +findById(id: long): Optional<DetentionEntity>
+    +findByName(namePart: String): List<DetentionEntity>
+    +findByStatus(status: DetentionStatus): List<DetentionEntity>
+    +update(entity: DetentionEntity): boolean
+    +delete(id: long): boolean
+    +countAll(): int
+    +countByStatus(status: DetentionStatus): int
+  }
+
+  class DatabaseConnectionManager {
+    +{static} getConnection(): Connection
+    +{static} close(): void
+  }
+}
+
+package "domain" {
+  class DetentionEntity {
+    -id: Long
+    -fullName: String
+    -birthDate: LocalDate
+    -detentionDateTime: LocalDateTime
+    -reason: String
+    -article: String
+    -officerName: String
+    -cellNumber: String
+    -status: DetentionStatus
+    -releaseDateTime: LocalDateTime
+    -notes: String
+    +toString(): String
+  }
+
+  enum DetentionStatus {
+    DETAINED
+    RELEASED
+    TRANSFERRED
+    +getLabel(): String
+  }
+}
+
+DetentionRegistryApplication ..> ConsoleApplication
+DetentionRegistryApplication ..> DatabaseConnectionManager
+ConsoleApplication *-- DetentionRepository
+ConsoleApplication ..> DetentionEntity
+ConsoleApplication ..> DetentionStatus
+DetentionRepository ..> DatabaseConnectionManager
+DetentionRepository ..> DetentionEntity
+DetentionRepository ..> DetentionStatus
+DetentionEntity --> DetentionStatus
+
+@enduml

@@ -1,4 +1,4 @@
-package ru.istu.police.model;
+package domain;
 
 /**
  * Статус задержанного лица.

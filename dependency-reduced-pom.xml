@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>ru.istu.police</groupId>
-  <artifactId>detention-registry</artifactId>
-  <name>Учёт задержаний — отделение полиции</name>
+  <groupId>detentionregistry</groupId>
+  <artifactId>police-detention-registry</artifactId>
+  <name>Информационная система учёта задержаний</name>
   <version>1.0.0</version>
-  <description>Курсовая работа: приложение для учёта задержаний</description>
+  <description>Курсовая работа: приложение для учёта задержаний в отделении полиции</description>
   <build>
     <plugins>
       <plugin>
@@ -14,7 +14,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>ru.istu.police.Main</mainClass>
+              <mainClass>DetentionRegistryApplication</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -31,7 +31,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>ru.istu.police.Main</mainClass>
+                  <mainClass>DetentionRegistryApplication</mainClass>
                 </transformer>
               </transformers>
             </configuration>

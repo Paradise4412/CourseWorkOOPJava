@@ -1,13 +1,13 @@
-package ru.istu.police.model;
+package domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Запись об учёте задержания.
+ * Сущность записи об учёте задержания.
  */
-public class DetentionRecord {
+public class DetentionEntity {
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter DATETIME_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -24,10 +24,10 @@ public class DetentionRecord {
     private LocalDateTime releaseDateTime;
     private String notes;
 
-    public DetentionRecord() {
+    public DetentionEntity() {
     }
 
-    public DetentionRecord(Long id, String fullName, LocalDate birthDate,
+    public DetentionEntity(Long id, String fullName, LocalDate birthDate,
                            LocalDateTime detentionDateTime, String reason, String article,
                            String officerName, String cellNumber, DetentionStatus status,
                            LocalDateTime releaseDateTime, String notes) {

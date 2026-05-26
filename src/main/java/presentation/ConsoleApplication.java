@@ -1,8 +1,8 @@
-package ru.istu.police.ui;
+package presentation;
 
-import ru.istu.police.dao.DetentionDao;
-import ru.istu.police.model.DetentionRecord;
-import ru.istu.police.model.DetentionStatus;
+import domain.DetentionEntity;
+import domain.DetentionStatus;
+import persistence.DetentionRepository;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -14,14 +14,14 @@ import java.util.Optional;
 import java.util.Scanner;
 
 /**
- * Консольный интерфейс приложения.
+ * Консольный пользовательский интерфейс приложения.
  */
-public class ConsoleApp {
+public class ConsoleApplication {
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter DATETIME_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-    private final DetentionDao dao = new DetentionDao();
+    private final DetentionRepository repository = new DetentionRepository();
     private final Scanner scanner = new Scanner(System.in);
 
     public void run() {
@@ -39,7 +39,7 @@ public class ConsoleApp {
             }
             System.out.println();
         }
-        System.out.println("Работа завершена. Данные сохранены в папке data/");
+        System.out.println("Работа завершена. Данные сохранены в папке database/");
     }
 
     private void printHeader() {
@@ -83,14 +83,14 @@ public class ConsoleApp {
 
     private void addRecord() throws SQLException {
         System.out.println("\n--- Новое задержание ---");
-        DetentionRecord record = readRecordFromUser(null);
-        long id = dao.insert(record);
+        DetentionEntity entity = readEntityFromUser(null);
+        long id = repository.insert(entity);
         System.out.println("Запись успешно добавлена. Номер: " + id);
     }
 
     private void listAll() throws SQLException {
-        List<DetentionRecord> records = dao.findAll();
-        printRecordList(records);
+        List<DetentionEntity> entities = repository.findAll();
+        printEntityList(entities);
     }
 
     private void searchByName() throws SQLException {
@@ -99,19 +99,19 @@ public class ConsoleApp {
             System.out.println("ФИО не может быть пустым.");
             return;
         }
-        printRecordList(dao.findByName(name));
+        printEntityList(repository.findByName(name));
     }
 
     private void searchByStatus() throws SQLException {
         DetentionStatus status = readStatus();
-        printRecordList(dao.findByStatus(status));
+        printEntityList(repository.findByStatus(status));
     }
 
     private void viewById() throws SQLException {
         long id = readLong("Введите номер записи: ");
-        Optional<DetentionRecord> record = dao.findById(id);
-        if (record.isPresent()) {
-            System.out.println(record.get());
+        Optional<DetentionEntity> entity = repository.findById(id);
+        if (entity.isPresent()) {
+            System.out.println(entity.get());
         } else {
             System.out.println("Запись с номером " + id + " не найдена.");
         }
@@ -119,7 +119,7 @@ public class ConsoleApp {
 
     private void updateRecord() throws SQLException {
         long id = readLong("Введите номер записи для изменения: ");
-        Optional<DetentionRecord> existing = dao.findById(id);
+        Optional<DetentionEntity> existing = repository.findById(id);
         if (existing.isEmpty()) {
             System.out.println("Запись не найдена.");
             return;
@@ -127,9 +127,9 @@ public class ConsoleApp {
         System.out.println("Текущие данные:");
         System.out.println(existing.get());
         System.out.println("Введите новые данные (Enter — оставить без изменений):");
-        DetentionRecord updated = readRecordFromUser(existing.get());
+        DetentionEntity updated = readEntityFromUser(existing.get());
         updated.setId(id);
-        if (dao.update(updated)) {
+        if (repository.update(updated)) {
             System.out.println("Запись обновлена.");
         } else {
             System.out.println("Не удалось обновить запись.");
@@ -143,7 +143,7 @@ public class ConsoleApp {
             System.out.println("Удаление отменено.");
             return;
         }
-        if (dao.delete(id)) {
+        if (repository.delete(id)) {
             System.out.println("Запись удалена.");
         } else {
             System.out.println("Запись не найдена.");
@@ -151,10 +151,10 @@ public class ConsoleApp {
     }
 
     private void showStatistics() throws SQLException {
-        int total = dao.countAll();
-        int detained = dao.countByStatus(DetentionStatus.DETAINED);
-        int released = dao.countByStatus(DetentionStatus.RELEASED);
-        int transferred = dao.countByStatus(DetentionStatus.TRANSFERRED);
+        int total = repository.countAll();
+        int detained = repository.countByStatus(DetentionStatus.DETAINED);
+        int released = repository.countByStatus(DetentionStatus.RELEASED);
+        int transferred = repository.countByStatus(DetentionStatus.TRANSFERRED);
 
         System.out.println("\n--- Статистика ---");
         System.out.println("Всего записей: " + total);
@@ -163,24 +163,24 @@ public class ConsoleApp {
         System.out.println("Переданы в СИЗО: " + transferred);
     }
 
-    private void printRecordList(List<DetentionRecord> records) {
-        if (records.isEmpty()) {
+    private void printEntityList(List<DetentionEntity> entities) {
+        if (entities.isEmpty()) {
             System.out.println("Записей не найдено.");
             return;
         }
-        System.out.println("Найдено записей: " + records.size());
+        System.out.println("Найдено записей: " + entities.size());
         System.out.println("────────────────────────────────────────");
-        for (DetentionRecord r : records) {
-            System.out.println(r);
+        for (DetentionEntity entity : entities) {
+            System.out.println(entity);
         }
     }
 
-    private DetentionRecord readRecordFromUser(DetentionRecord defaults) {
-        DetentionRecord r = defaults != null ? copy(defaults) : new DetentionRecord();
+    private DetentionEntity readEntityFromUser(DetentionEntity defaults) {
+        DetentionEntity entity = defaults != null ? copy(defaults) : new DetentionEntity();
 
         String fullName = readOptional("ФИО", defaults != null ? defaults.getFullName() : null);
         if (fullName != null && !fullName.isBlank()) {
-            r.setFullName(fullName.trim());
+            entity.setFullName(fullName.trim());
         } else if (defaults == null) {
             throw new IllegalArgumentException("ФИО обязательно для заполнения");
         }
@@ -188,7 +188,7 @@ public class ConsoleApp {
         LocalDate birth = readOptionalDate("Дата рождения (дд.мм.гггг)",
                 defaults != null ? defaults.getBirthDate() : null);
         if (birth != null) {
-            r.setBirthDate(birth);
+            entity.setBirthDate(birth);
         } else if (defaults == null) {
             throw new IllegalArgumentException("Дата рождения обязательна");
         }
@@ -196,13 +196,13 @@ public class ConsoleApp {
         LocalDateTime detained = readOptionalDateTime("Дата и время задержания (дд.мм.гггг чч:мм)",
                 defaults != null ? defaults.getDetentionDateTime() : LocalDateTime.now());
         if (detained != null) {
-            r.setDetentionDateTime(detained);
+            entity.setDetentionDateTime(detained);
         }
 
         String reason = readOptional("Причина задержания",
                 defaults != null ? defaults.getReason() : null);
         if (reason != null && !reason.isBlank()) {
-            r.setReason(reason.trim());
+            entity.setReason(reason.trim());
         } else if (defaults == null) {
             throw new IllegalArgumentException("Причина обязательна");
         }
@@ -210,13 +210,13 @@ public class ConsoleApp {
         String article = readOptional("Статья УК (необязательно)",
                 defaults != null ? defaults.getArticle() : null);
         if (article != null) {
-            r.setArticle(article.isBlank() ? null : article.trim());
+            entity.setArticle(article.isBlank() ? null : article.trim());
         }
 
         String officer = readOptional("ФИО сотрудника",
                 defaults != null ? defaults.getOfficerName() : null);
         if (officer != null && !officer.isBlank()) {
-            r.setOfficerName(officer.trim());
+            entity.setOfficerName(officer.trim());
         } else if (defaults == null) {
             throw new IllegalArgumentException("ФИО сотрудника обязательно");
         }
@@ -224,43 +224,43 @@ public class ConsoleApp {
         String cell = readOptional("Номер камеры (необязательно)",
                 defaults != null ? defaults.getCellNumber() : null);
         if (cell != null) {
-            r.setCellNumber(cell.isBlank() ? null : cell.trim());
+            entity.setCellNumber(cell.isBlank() ? null : cell.trim());
         }
 
         if (defaults == null) {
-            r.setStatus(readStatus());
+            entity.setStatus(readStatus());
         } else {
             System.out.print("Статус (1-Задержан, 2-Отпущен, 3-СИЗО) [Enter — без изменений]: ");
             String statusInput = scanner.nextLine().trim();
             if (!statusInput.isEmpty()) {
-                r.setStatus(parseStatusChoice(statusInput));
+                entity.setStatus(parseStatusChoice(statusInput));
             }
         }
 
-        if (r.getStatus() != DetentionStatus.DETAINED) {
+        if (entity.getStatus() != DetentionStatus.DETAINED) {
             LocalDateTime release = readOptionalDateTime(
                     "Дата и время освобождения/передачи (дд.мм.гггг чч:мм)",
                     defaults != null ? defaults.getReleaseDateTime() : LocalDateTime.now());
-            r.setReleaseDateTime(release);
+            entity.setReleaseDateTime(release);
         } else if (defaults == null) {
-            r.setReleaseDateTime(null);
+            entity.setReleaseDateTime(null);
         }
 
         String notes = readOptional("Примечание",
                 defaults != null ? defaults.getNotes() : null);
         if (notes != null) {
-            r.setNotes(notes.isBlank() ? null : notes.trim());
+            entity.setNotes(notes.isBlank() ? null : notes.trim());
         }
 
-        return r;
+        return entity;
     }
 
-    private DetentionRecord copy(DetentionRecord src) {
-        return new DetentionRecord(
-                src.getId(), src.getFullName(), src.getBirthDate(),
-                src.getDetentionDateTime(), src.getReason(), src.getArticle(),
-                src.getOfficerName(), src.getCellNumber(), src.getStatus(),
-                src.getReleaseDateTime(), src.getNotes()
+    private DetentionEntity copy(DetentionEntity source) {
+        return new DetentionEntity(
+                source.getId(), source.getFullName(), source.getBirthDate(),
+                source.getDetentionDateTime(), source.getReason(), source.getArticle(),
+                source.getOfficerName(), source.getCellNumber(), source.getStatus(),
+                source.getReleaseDateTime(), source.getNotes()
         );
     }
 
