@@ -45,7 +45,6 @@ public class ConsoleApplication {
     private void printHeader() {
         System.out.println("╔══════════════════════════════════════════════════════╗");
         System.out.println("║   УЧЁТ ЗАДЕРЖАНИЙ — ОТДЕЛЕНИЕ ПОЛИЦИИ               ║");
-        System.out.println("║   Курсовая работа (Java + JDBC + H2)                 ║");
         System.out.println("╚══════════════════════════════════════════════════════╝");
         System.out.println();
     }
