@@ -4,10 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Сущность записи об учёте задержания.
- */
-public class DetentionEntity {
+public class RecordEntity {
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter DATETIME_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -20,16 +17,16 @@ public class DetentionEntity {
     private String article;
     private String officerName;
     private String cellNumber;
-    private DetentionStatus status;
+    private RecordStatus status;
     private LocalDateTime releaseDateTime;
     private String notes;
 
-    public DetentionEntity() {
+    public RecordEntity() {
     }
 
-    public DetentionEntity(Long id, String fullName, LocalDate birthDate,
+    public RecordEntity(Long id, String fullName, LocalDate birthDate,
                            LocalDateTime detentionDateTime, String reason, String article,
-                           String officerName, String cellNumber, DetentionStatus status,
+                           String officerName, String cellNumber, RecordStatus status,
                            LocalDateTime releaseDateTime, String notes) {
         this.id = id;
         this.fullName = fullName;
@@ -108,11 +105,11 @@ public class DetentionEntity {
         this.cellNumber = cellNumber;
     }
 
-    public DetentionStatus getStatus() {
+    public RecordStatus getStatus() {
         return status;
     }
 
-    public void setStatus(DetentionStatus status) {
+    public void setStatus(RecordStatus status) {
         this.status = status;
     }
 

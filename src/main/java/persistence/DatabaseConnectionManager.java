@@ -6,9 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * Управление подключением к встроенной СУБД H2.
- */
+
 public final class DatabaseConnectionManager {
 
     private static final String DATABASE_FILE = "database/detention_registry";
@@ -24,7 +22,7 @@ public final class DatabaseConnectionManager {
                 databaseDir.toFile().mkdirs();
             }
             String url = "jdbc:h2:./" + DATABASE_FILE + ";MODE=PostgreSQL;AUTO_SERVER=TRUE";
-            connection = DriverManager.getConnection(url, "sa", "");
+            connection = DriverManager.getConnection(url, "vladimirmoshkin", "");
             initializeSchema();
         }
         return connection;
