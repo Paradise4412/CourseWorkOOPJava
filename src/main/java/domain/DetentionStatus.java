@@ -1,13 +1,13 @@
 package domain;
 
-public enum RecordStatus {
+public enum DetentionStatus {
     DETAINED("Задержан"),
     RELEASED("Отпущен"),
     TRANSFERRED("Передан в СИЗО");
 
     private final String label;
 
-    RecordStatus(String label) {
+    DetentionStatus(String label) {
         this.label = label;
     }
 
@@ -15,8 +15,8 @@ public enum RecordStatus {
         return label;
     }
 
-    public static RecordStatus fromLabel(String label) {
-        for (RecordStatus status : values()) {
+    public static DetentionStatus fromLabel(String label) {
+        for (DetentionStatus status : values()) {
             if (status.label.equalsIgnoreCase(label) || status.name().equalsIgnoreCase(label)) {
                 return status;
             }

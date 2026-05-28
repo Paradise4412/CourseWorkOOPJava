@@ -1,8 +1,8 @@
 package presentation;
 
-import domain.RecordEntity;
-import domain.RecordStatus;
-import persistence.RecordRepository;
+import domain.DetentionEntity;
+import domain.DetentionStatus;
+import persistence.DetentionRepository;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -21,7 +21,7 @@ public class ConsoleApplication {
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter DATETIME_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-    private final RecordRepository repository = new RecordRepository();
+    private final DetentionRepository repository = new DetentionRepository();
     private final Scanner scanner = new Scanner(System.in);
 
     public void run() {
@@ -82,13 +82,13 @@ public class ConsoleApplication {
 
     private void addRecord() throws SQLException {
         System.out.println("\n--- Новое задержание ---");
-        RecordEntity entity = readEntityFromUser(null);
+        DetentionEntity entity = readEntityFromUser(null);
         long id = repository.insert(entity);
         System.out.println("Запись успешно добавлена. Номер: " + id);
     }
 
     private void listAll() throws SQLException {
-        List<RecordEntity> entities = repository.findAll();
+        List<DetentionEntity> entities = repository.findAll();
         printEntityList(entities);
     }
 
@@ -102,13 +102,13 @@ public class ConsoleApplication {
     }
 
     private void searchByStatus() throws SQLException {
-        RecordStatus status = readStatus();
+        DetentionStatus status = readStatus();
         printEntityList(repository.findByStatus(status));
     }
 
     private void viewById() throws SQLException {
         long id = readLong("Введите номер записи: ");
-        Optional<RecordEntity> entity = repository.findById(id);
+        Optional<DetentionEntity> entity = repository.findById(id);
         if (entity.isPresent()) {
             System.out.println(entity.get());
         } else {
@@ -118,7 +118,7 @@ public class ConsoleApplication {
 
     private void updateRecord() throws SQLException {
         long id = readLong("Введите номер записи для изменения: ");
-        Optional<RecordEntity> existing = repository.findById(id);
+        Optional<DetentionEntity> existing = repository.findById(id);
         if (existing.isEmpty()) {
             System.out.println("Запись не найдена.");
             return;
@@ -126,7 +126,7 @@ public class ConsoleApplication {
         System.out.println("Текущие данные:");
         System.out.println(existing.get());
         System.out.println("Введите новые данные (Enter — оставить без изменений):");
-        RecordEntity updated = readEntityFromUser(existing.get());
+        DetentionEntity updated = readEntityFromUser(existing.get());
         updated.setId(id);
         if (repository.update(updated)) {
             System.out.println("Запись обновлена.");
@@ -151,9 +151,9 @@ public class ConsoleApplication {
 
     private void showStatistics() throws SQLException {
         int total = repository.countAll();
-        int detained = repository.countByStatus(RecordStatus.DETAINED);
-        int released = repository.countByStatus(RecordStatus.RELEASED);
-        int transferred = repository.countByStatus(RecordStatus.TRANSFERRED);
+        int detained = repository.countByStatus(DetentionStatus.DETAINED);
+        int released = repository.countByStatus(DetentionStatus.RELEASED);
+        int transferred = repository.countByStatus(DetentionStatus.TRANSFERRED);
 
         System.out.println("\n--- Статистика ---");
         System.out.println("Всего записей: " + total);
@@ -162,20 +162,20 @@ public class ConsoleApplication {
         System.out.println("Переданы в СИЗО: " + transferred);
     }
 
-    private void printEntityList(List<RecordEntity> entities) {
+    private void printEntityList(List<DetentionEntity> entities) {
         if (entities.isEmpty()) {
             System.out.println("Записей не найдено.");
             return;
         }
         System.out.println("Найдено записей: " + entities.size());
         System.out.println("────────────────────────────────────────");
-        for (RecordEntity entity : entities) {
+        for (DetentionEntity entity : entities) {
             System.out.println(entity);
         }
     }
 
-    private RecordEntity readEntityFromUser(RecordEntity defaults) {
-        RecordEntity entity = defaults != null ? copy(defaults) : new RecordEntity();
+    private DetentionEntity readEntityFromUser(DetentionEntity defaults) {
+        DetentionEntity entity = defaults != null ? copy(defaults) : new DetentionEntity();
 
         String fullName = readOptional("ФИО", defaults != null ? defaults.getFullName() : null);
         if (fullName != null && !fullName.isBlank()) {
@@ -236,7 +236,7 @@ public class ConsoleApplication {
             }
         }
 
-        if (entity.getStatus() != RecordStatus.DETAINED) {
+        if (entity.getStatus() != DetentionStatus.DETAINED) {
             LocalDateTime release = readOptionalDateTime(
                     "Дата и время освобождения/передачи (дд.мм.гггг чч:мм)",
                     defaults != null ? defaults.getReleaseDateTime() : LocalDateTime.now());
@@ -254,8 +254,8 @@ public class ConsoleApplication {
         return entity;
     }
 
-    private RecordEntity copy(RecordEntity source) {
-        return new RecordEntity(
+    private DetentionEntity copy(DetentionEntity source) {
+        return new DetentionEntity(
                 source.getId(), source.getFullName(), source.getBirthDate(),
                 source.getDetentionDateTime(), source.getReason(), source.getArticle(),
                 source.getOfficerName(), source.getCellNumber(), source.getStatus(),
@@ -263,7 +263,7 @@ public class ConsoleApplication {
         );
     }
 
-    private RecordStatus readStatus() {
+    private DetentionStatus readStatus() {
         System.out.println("Статус:");
         System.out.println(" 1 — Задержан");
         System.out.println(" 2 — Отпущен");
@@ -272,11 +272,11 @@ public class ConsoleApplication {
         return parseStatusChoice(input);
     }
 
-    private RecordStatus parseStatusChoice(String input) {
+    private DetentionStatus parseStatusChoice(String input) {
         return switch (input.trim()) {
-            case "1" -> RecordStatus.DETAINED;
-            case "2" -> RecordStatus.RELEASED;
-            case "3" -> RecordStatus.TRANSFERRED;
+            case "1" -> DetentionStatus.DETAINED;
+            case "2" -> DetentionStatus.RELEASED;
+            case "3" -> DetentionStatus.TRANSFERRED;
             default -> throw new IllegalArgumentException("Выберите 1, 2 или 3");
         };
     }

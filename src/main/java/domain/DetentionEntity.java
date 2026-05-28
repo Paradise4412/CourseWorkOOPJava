@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class RecordEntity {
+public class DetentionEntity {
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter DATETIME_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -17,16 +17,16 @@ public class RecordEntity {
     private String article;
     private String officerName;
     private String cellNumber;
-    private RecordStatus status;
+    private DetentionStatus status;
     private LocalDateTime releaseDateTime;
     private String notes;
 
-    public RecordEntity() {
+    public DetentionEntity() {
     }
 
-    public RecordEntity(Long id, String fullName, LocalDate birthDate,
+    public DetentionEntity(Long id, String fullName, LocalDate birthDate,
                            LocalDateTime detentionDateTime, String reason, String article,
-                           String officerName, String cellNumber, RecordStatus status,
+                           String officerName, String cellNumber, DetentionStatus status,
                            LocalDateTime releaseDateTime, String notes) {
         this.id = id;
         this.fullName = fullName;
@@ -105,11 +105,11 @@ public class RecordEntity {
         this.cellNumber = cellNumber;
     }
 
-    public RecordStatus getStatus() {
+    public DetentionStatus getStatus() {
         return status;
     }
 
-    public void setStatus(RecordStatus status) {
+    public void setStatus(DetentionStatus status) {
         this.status = status;
     }
 

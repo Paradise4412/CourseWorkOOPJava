@@ -10,30 +10,30 @@
 
 ```
 src/main/java/
-├── RegistryApplication.java            — точка входа
+├── DetentionRegistryApplication.java            — точка входа
 ├── domain/                             — доменная модель
-│   ├── RecordEntity.java
-│   └── RecordStatus.java
+│   ├── DetentionEntity.java
+│   └── DetentionStatus.java
 ├── persistence/                        — слой хранения данных
 │   ├── DatabaseConnectionManager.java
-│   └── RecordRepository.java
+│   └── DetentionRepository.java
 └── presentation/                       — пользовательский интерфейс
     └── ConsoleApplication.java
 ```
 
 | Компонент | Назначение |
 |-----------|------------|
-| `RegistryApplication` | Запуск приложения и корректное закрытие соединения с БД |
-| `RecordEntity` | Сущность записи о задержании |
-| `RecordStatus` | Перечисление статусов задержанного лица |
+| `DetentionRegistryApplication` | Запуск приложения и корректное закрытие соединения с БД |
+| `DetentionEntity` | Сущность записи о задержании |
+| `DetentionStatus` | Перечисление статусов задержанного лица |
 | `DatabaseConnectionManager` | Подключение к H2 и инициализация схемы |
-| `RecordRepository` | Операции CRUD и статистика (JDBC) |
+| `DetentionRepository` | Операции CRUD и статистика (JDBC) |
 | `ConsoleApplication` | Консольное меню и ввод данных |
 
 Требуются **JDK 17+** и **Maven**.
 
 ```bash
-mvn compile exec:java -Dexec.mainClass="RegistryApplication"
+mvn compile exec:java -Dexec.mainClass="DetentionRegistryApplication"
 ```
 
 Сборка и запуск JAR:
@@ -42,7 +42,3 @@ mvn compile exec:java -Dexec.mainClass="RegistryApplication"
 mvn package
 java -jar target/police-detention-registry-1.0.0.jar
 ```
-
-## База данных
-
-При первом запуске создаётся файл `database/detention_registry.mv.db`. Таблица `detentions` создаётся автоматически.

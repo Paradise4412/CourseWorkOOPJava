@@ -1,7 +1,7 @@
 package persistence;
 
-import domain.RecordEntity;
-import domain.RecordStatus;
+import domain.DetentionEntity;
+import domain.DetentionStatus;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RecordRepository {
+public class DetentionRepository {
 
-    public long insert(RecordEntity entity) throws SQLException {
+    public long insert(DetentionEntity entity) throws SQLException {
         String sql = """
                 INSERT INTO detentions (full_name, birth_date, detention_datetime, reason, article,
                     officer_name, cell_number, status, release_datetime, notes)
@@ -33,7 +33,7 @@ public class RecordRepository {
         throw new SQLException("Не удалось получить id новой записи");
     }
 
-    public List<RecordEntity> findAll() throws SQLException {
+    public List<DetentionEntity> findAll() throws SQLException {
         String sql = "SELECT * FROM detentions ORDER BY detention_datetime DESC";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
@@ -42,7 +42,7 @@ public class RecordRepository {
         }
     }
 
-    public Optional<RecordEntity> findById(long id) throws SQLException {
+    public Optional<DetentionEntity> findById(long id) throws SQLException {
         String sql = "SELECT * FROM detentions WHERE id = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -56,7 +56,7 @@ public class RecordRepository {
         return Optional.empty();
     }
 
-    public List<RecordEntity> findByName(String namePart) throws SQLException {
+    public List<DetentionEntity> findByName(String namePart) throws SQLException {
         String sql = "SELECT * FROM detentions WHERE LOWER(full_name) LIKE LOWER(?) ORDER BY detention_datetime DESC";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -67,7 +67,7 @@ public class RecordRepository {
         }
     }
 
-    public List<RecordEntity> findByStatus(RecordStatus status) throws SQLException {
+    public List<DetentionEntity> findByStatus(DetentionStatus status) throws SQLException {
         String sql = "SELECT * FROM detentions WHERE status = ? ORDER BY detention_datetime DESC";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -78,7 +78,7 @@ public class RecordRepository {
         }
     }
 
-    public boolean update(RecordEntity entity) throws SQLException {
+    public boolean update(DetentionEntity entity) throws SQLException {
         String sql = """
                 UPDATE detentions SET full_name=?, birth_date=?, detention_datetime=?, reason=?,
                     article=?, officer_name=?, cell_number=?, status=?, release_datetime=?, notes=?
@@ -101,7 +101,7 @@ public class RecordRepository {
         }
     }
 
-    public int countByStatus(RecordStatus status) throws SQLException {
+    public int countByStatus(DetentionStatus status) throws SQLException {
         String sql = "SELECT COUNT(*) FROM detentions WHERE status = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -123,7 +123,7 @@ public class RecordRepository {
         }
     }
 
-    private void fillStatement(PreparedStatement statement, RecordEntity entity) throws SQLException {
+    private void fillStatement(PreparedStatement statement, DetentionEntity entity) throws SQLException {
         statement.setString(1, entity.getFullName());
         statement.setDate(2, Date.valueOf(entity.getBirthDate()));
         statement.setTimestamp(3, Timestamp.valueOf(entity.getDetentionDateTime()));
@@ -140,16 +140,16 @@ public class RecordRepository {
         statement.setString(10, entity.getNotes());
     }
 
-    private List<RecordEntity> mapList(ResultSet resultSet) throws SQLException {
-        List<RecordEntity> list = new ArrayList<>();
+    private List<DetentionEntity> mapList(ResultSet resultSet) throws SQLException {
+        List<DetentionEntity> list = new ArrayList<>();
         while (resultSet.next()) {
             list.add(mapRow(resultSet));
         }
         return list;
     }
 
-    private RecordEntity mapRow(ResultSet resultSet) throws SQLException {
-        RecordEntity entity = new RecordEntity();
+    private DetentionEntity mapRow(ResultSet resultSet) throws SQLException {
+        DetentionEntity entity = new DetentionEntity();
         entity.setId(resultSet.getLong("id"));
         entity.setFullName(resultSet.getString("full_name"));
         Date birthDate = resultSet.getDate("birth_date");
@@ -164,7 +164,7 @@ public class RecordRepository {
         entity.setArticle(resultSet.getString("article"));
         entity.setOfficerName(resultSet.getString("officer_name"));
         entity.setCellNumber(resultSet.getString("cell_number"));
-        entity.setStatus(RecordStatus.valueOf(resultSet.getString("status")));
+        entity.setStatus(DetentionStatus.valueOf(resultSet.getString("status")));
         Timestamp releaseDateTime = resultSet.getTimestamp("release_datetime");
         if (releaseDateTime != null) {
             entity.setReleaseDateTime(releaseDateTime.toLocalDateTime());
